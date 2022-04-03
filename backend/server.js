@@ -20,6 +20,7 @@ const pusher = new Pusher({
 // middleware
 app.use(express.json())
 
+// Pusher middleware 
 app.use((req,res,next)=>{
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Headers", "*");
@@ -47,7 +48,7 @@ db.once('open', ()=>{
     changeStream.on("change", (change) => {
         console.log("a change occured", change);
 
-        if(change.operationType === 'insert') {
+        if( change.operationType === 'insert') {
             const messageDetails = change.fullDocument;
             pusher.trigger('messages', 'inserted',
                 {
