@@ -3,6 +3,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import Messages from './dbMessages.js';
 import Pusher from 'pusher';
+import cors from 'cors';
 
 // app config
 const app = express();
@@ -18,14 +19,8 @@ const pusher = new Pusher({
 });
 
 // middleware
-app.use(express.json())
-
-// Pusher middleware 
-app.use((req,res,next)=>{
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Headers", "*");
-    next();
-})
+app.use(express.json());
+app.use(cors());
 
 // DB config
 const connection_url = 'mongodb+srv://mpaczko:8I1jRjVbu0086cD2@cluster0.6i9or.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
@@ -52,8 +47,10 @@ db.once('open', ()=>{
             const messageDetails = change.fullDocument;
             pusher.trigger('messages', 'inserted',
                 {
-                    name: messageDetails.user,
-                    message: messageDetails.message
+                    name: messageDetails.name,
+                    message: messageDetails.message,
+                    timestamp: messageDetails.timestamp,
+                    received: messageDetails.received
                 }
             );
         }else {
