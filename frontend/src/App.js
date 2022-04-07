@@ -4,6 +4,8 @@ import Chat from './Chat';
 import { useEffect, useState } from 'react';
 import Pusher from 'pusher-js';
 import axios from './axios';
+import React from "react";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 function App() {
 
@@ -35,13 +37,21 @@ function App() {
 
   }, [messages])
 
-  console.log(messages)
   
   return (
     <div className="app">
       <div className="app__body">
-        <Sidebar />
-        <Chat messages={messages}/>
+        <Router>
+          <Sidebar/>
+          <Switch>
+            <Route path="/rooms/:roomId">
+              <Chat/>
+            </Route>
+            <Route path='/'>
+              <Chat/>      
+            </Route>
+          </Switch>
+        </Router>
       </div>
     </div>
   );

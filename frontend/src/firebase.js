@@ -1,8 +1,21 @@
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
+import 'firebase/compat/firestore';
+
 const firebaseConfig = {
-    apiKey: "AIzaSyCVTnzf_vGjw9cL38wHC1nYd9vtt3pqwtI",
-    authDomain: "chatapp-88b56.firebaseapp.com",
-    projectId: "chatapp-88b56",
-    storageBucket: "chatapp-88b56.appspot.com",
-    messagingSenderId: "115734127606",
-    appId: "1:115734127606:web:d065155a345fa8d9e01dd7"
-  };
+  apiKey: "AIzaSyAQBe_IR5SKSX1cZcALhbQf1VKvQAAFu3I",
+  authDomain: "chatapp2-ecf55.firebaseapp.com",
+  projectId: "chatapp2-ecf55",
+  storageBucket: "chatapp2-ecf55.appspot.com",
+  messagingSenderId: "666593940495",
+  appId: "1:666593940495:web:7f2a3bdf6fad083e6dff7a",
+  measurementId: "G-H5MNFQH7R8"
+};
+
+const firebaseApp = firebase.initializeApp(firebaseConfig);
+const db = firebaseApp.firestore();
+const auth = firebase.auth();
+const provider = new firebase.auth.GoogleAuthProvider();
+
+export { auth, provider };
+export default db;
