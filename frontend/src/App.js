@@ -17,30 +17,30 @@ function App() {
   const[{ user }, dispatch] = useStateValue();
 
 
-  useEffect(() => {
-    axios.get('/messages/sync')
-      .then(res => {
-        setMessages(res.data)
-      })
-  }, [])
+  // useEffect(() => {
+  //   axios.get('/messages/sync')
+  //     .then(res => {
+  //       setMessages(res.data)
+  //     })
+  // }, [])
   
-  useEffect(() => { 
+  // useEffect(() => { 
 
-    const pusher = new Pusher('eef5420130b643b793aa', {
-      cluster: 'eu'
-    });
+  //   const pusher = new Pusher('eef5420130b643b793aa', {
+  //     cluster: 'eu'
+  //   });
 
-    const channel = pusher.subscribe('messages');
-    channel.bind('inserted', function(data) {
-      setMessages([...messages, data])
-    });
+  //   const channel = pusher.subscribe('messages');
+  //   channel.bind('inserted', function(data) {
+  //     setMessages([...messages, data])
+  //   });
 
-    return () =>{
-      channel.unbind_all();
-      channel.unsubscribe();
-    };
+  //   return () =>{
+  //     channel.unbind_all();
+  //     channel.unsubscribe();
+  //   };
 
-  }, [messages])
+  // }, [messages])
 
   
   return (

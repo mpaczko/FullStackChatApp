@@ -4,13 +4,17 @@ import { Avatar,IconButton } from '@material-ui/core';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { AttachFile, Mic, InsertEmoticon, SearchOutlined } from '@material-ui/icons';
 import { useParams } from 'react-router-dom';
+import { useStateValue } from './StateProvider';
 import db from "./firebase";
+import firebase from 'firebase/compat/app';
 
-const Chat = ({ messages }) => {
+const Chat = () => {
 
-    const [input, setInput] = useState("");
+    const [input, setInput] = useState();
     const {roomId} = useParams();
     const [roomName, setRoomName] = useState("");
+    const [messages, setMessages] = useState([]);
+    const[{ user }, dispatch] = useStateValue();
 
     useEffect(() => {
         if(roomId){
@@ -19,6 +23,13 @@ const Chat = ({ messages }) => {
                 .onSnapshot(snapshot => (
                 setRoomName(snapshot.data().name)
             ));
+            db.collection('rooms')
+                .doc(roomId)
+                .collection('messages')
+                .orderBy('timestamp', 'asc').onSnapshot((snapshot) => (
+                    setMessages(snapshot.docs.map((doc) => doc.data()))
+                ))
+                
         }
     }, [roomId])
 
@@ -28,8 +39,16 @@ const Chat = ({ messages }) => {
 
     const sendMessage = (e) =>{
         e.preventDefault();
-        console.log(input)
-        setInput("")
+        db.collection('rooms')
+        .doc(roomId)
+        .collection('messages').add({
+            userId: user.uid,
+            message: input,
+            name: user.displayName,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        });
+
+        setInput("");
     };
 
   return (
@@ -39,7 +58,11 @@ const Chat = ({ messages }) => {
 
             <div className="chat__headerInfo">
             <h3>{roomName}</h3>
-            <p>Last seen at...</p>
+            <p>last seen{" "}
+                {new Date(
+                    messages[messages.length -1]?.timestamp?.toDate()).toUTCString()
+                }
+            </p>
         </div>
 
         <div className="chat__headerRight">
@@ -55,15 +78,16 @@ const Chat = ({ messages }) => {
             </div>
         </div>
         <div className="chat__body">
-            {messages?.map((message) => (
-                <p key={message?._id}
-                className={`chat__message ${message.received && "chat__reciever"}`}>
+            {messages.map((message) => (
+                <p
+                    className={`chat__message ${message?.userId === user.uid
+                    && "chat__reciever"}`}>
                     <span className='chat__name'>{message.name}</span>
                     {message.message}
                     <span className='chat__timestamp'>
-                        {message.timestamp}
+                       {new Date(message.timestamp?.toDate()).toUTCString()}
                     </span>
-                </p>
+                </p>  
             ))}
         </div>
         <div className="chat__footer">
