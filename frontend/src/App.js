@@ -1,70 +1,40 @@
-import './styles/App.css';
-import Sidebar from './components/Sidebar';
-import Chat from './components/Chat';
-import { useEffect, useState } from 'react';
-import Pusher from 'pusher-js';
-import axios from './axios';
-import React from "react";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import Login from './components/Login';
-import { useStateValue } from './useReducer/StateProvider';
-import { AuthProvider } from './useReducer/AuthContext';
-import { useAuth } from './useReducer/AuthContext';
-
+import React,{useEffect} from 'react';
+import {BrowserRouter, Routes, Route} from 'react-router-dom';
+import Home from './pages/Home';
+import Register from './pages/Register';
+import Login from './pages/Login';
+import UserRoute from './components/UserRoute';
+import { useDispatch } from 'react-redux';
+import {auth} from './firebase';
+import { setUser } from './redux/actions';
 
 function App() {
 
-  const [messages, setMessages] = useState([]);
-  const { currentUser } = useAuth();
+  const dispatch = useDispatch();
 
-
-  // useEffect(() => {
-  //   axios.get('/messages/sync')
-  //     .then(res => {
-  //       setMessages(res.data)
-  //     })
-  // }, [])
+  useEffect(() => {
+    auth.onAuthStateChanged((authUser) => {
+      if(authUser){
+        dispatch(setUser(authUser))
+      }else{
+        dispatch(setUser(null))
+      }
+    })
+  }, [])
   
-  // useEffect(() => { 
 
-  //   const pusher = new Pusher('eef5420130b643b793aa', {
-  //     cluster: 'eu'
-  //   });
-
-  //   const channel = pusher.subscribe('messages');
-  //   channel.bind('inserted', function(data) {
-  //     setMessages([...messages, data])
-  //   });
-
-  //   return () =>{
-  //     channel.unbind_all();
-  //     channel.unsubscribe();
-  //   };
-
-  // }, [messages])
-
-  
   return (
-      <div className="app">
-      <Router>
-        {true ? 
-          (<Login/>) :
-              (<div className="app__body">
-              <Router>
-                <Sidebar/>
-                <Switch>
-                  <Route path="/rooms/:roomId">
-                    <Chat/>
-                  </Route>
-                  <Route path='/'>
-                    <Chat/>      
-                  </Route>
-                </Switch>
-              </Router>
-            </div>)
-        }
-      </Router>
+    <BrowserRouter>
+      <div className="App">
+        <Routes>
+          <Route exact path='/' element={<UserRoute/>}>
+            <Route exact path='/' element={<Home/>}/>
+          </Route>
+          <Route path="/login" element={<Login/>}/>
+          <Route path="/register" element={<Register/>}/>
+        </Routes>
       </div>
+    </BrowserRouter>
   );
 }
 

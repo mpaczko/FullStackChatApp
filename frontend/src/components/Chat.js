@@ -4,10 +4,9 @@ import { Avatar,IconButton } from '@material-ui/core';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { AttachFile, Mic, InsertEmoticon, SearchOutlined } from '@material-ui/icons';
 import { useParams } from 'react-router-dom';
-import { useStateValue } from '../useReducer/StateProvider';
 import db from "../firebase";
 import firebase from 'firebase/compat/app';
-import { useAuth } from '../useReducer/AuthContext';
+
 
 const Chat = () => {
 

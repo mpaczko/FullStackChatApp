@@ -7,7 +7,6 @@ import { Avatar,IconButton } from '@material-ui/core';
 import { SearchOutlined } from '@material-ui/icons';
 import SidebarChat from './SidebarChat';
 import db from "../firebase";
-import { useStateValue } from '../useReducer/StateProvider';
 
 const Sidebar = () => {
 
