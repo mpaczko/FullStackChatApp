@@ -1,12 +1,13 @@
 import React,{ useState, useEffect } from 'react'
-import './Chat.css'
+import '../styles/Chat.css'
 import { Avatar,IconButton } from '@material-ui/core';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { AttachFile, Mic, InsertEmoticon, SearchOutlined } from '@material-ui/icons';
 import { useParams } from 'react-router-dom';
-import { useStateValue } from './StateProvider';
-import db from "./firebase";
+import { useStateValue } from '../useReducer/StateProvider';
+import db from "../firebase";
 import firebase from 'firebase/compat/app';
+import { useAuth } from '../useReducer/AuthContext';
 
 const Chat = () => {
 
@@ -14,7 +15,6 @@ const Chat = () => {
     const {roomId} = useParams();
     const [roomName, setRoomName] = useState("");
     const [messages, setMessages] = useState([]);
-    const[{ user }, dispatch] = useStateValue();
 
     useEffect(() => {
         if(roomId){
@@ -42,9 +42,9 @@ const Chat = () => {
         db.collection('rooms')
         .doc(roomId)
         .collection('messages').add({
-            userId: user.uid,
+            userId: 'value',
             message: input,
-            name: user.displayName,
+            name: 'value',
             timestamp: firebase.firestore.FieldValue.serverTimestamp(),
         });
 
@@ -80,7 +80,7 @@ const Chat = () => {
         <div className="chat__body">
             {messages.map((message) => (
                 <p
-                    className={`chat__message ${message?.userId === user.uid
+                    className={`chat__message ${true
                     && "chat__reciever"}`}>
                     <span className='chat__name'>{message.name}</span>
                     {message.message}

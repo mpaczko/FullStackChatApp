@@ -1,20 +1,21 @@
-import './App.css';
-import Sidebar from './Sidebar';
-import Chat from './Chat';
+import './styles/App.css';
+import Sidebar from './components/Sidebar';
+import Chat from './components/Chat';
 import { useEffect, useState } from 'react';
 import Pusher from 'pusher-js';
 import axios from './axios';
 import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import Login from './Login';
-import { useStateValue } from './StateProvider';
+import Login from './components/Login';
+import { useStateValue } from './useReducer/StateProvider';
+import { AuthProvider } from './useReducer/AuthContext';
+import { useAuth } from './useReducer/AuthContext';
 
 
 function App() {
 
   const [messages, setMessages] = useState([]);
-
-  const[{ user }, dispatch] = useStateValue();
+  const { currentUser } = useAuth();
 
 
   // useEffect(() => {
@@ -44,24 +45,26 @@ function App() {
 
   
   return (
-    <div className="app">
-      {!user ? 
-        (<Login/>) :
-            (<div className="app__body">
-            <Router>
-              <Sidebar/>
-              <Switch>
-                <Route path="/rooms/:roomId">
-                  <Chat/>
-                </Route>
-                <Route path='/'>
-                  <Chat/>      
-                </Route>
-              </Switch>
-            </Router>
-          </div>)
-      }
-    </div>
+      <div className="app">
+      <Router>
+        {true ? 
+          (<Login/>) :
+              (<div className="app__body">
+              <Router>
+                <Sidebar/>
+                <Switch>
+                  <Route path="/rooms/:roomId">
+                    <Chat/>
+                  </Route>
+                  <Route path='/'>
+                    <Chat/>      
+                  </Route>
+                </Switch>
+              </Router>
+            </div>)
+        }
+      </Router>
+      </div>
   );
 }
 
