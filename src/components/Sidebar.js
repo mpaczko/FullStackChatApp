@@ -92,18 +92,18 @@ const Sidebar = ({children}) => {
                                         {isComponentVisible &&  
                                             <div className='headerRight__more'>
                                                 <ul>
-                                                    <li onClick={handleAuth}>Logout</li>
                                                     <li><span
-                                                        data-background-color="#f0f1f2"
-                                                        data-text-color="gray"
-                                                        type="info"
-                                                        data-multiline="true"
-                                                        data-class="info-sky"
-                                                        data-html="true"
-                                                        data-tip="soon available :)"
-                                                    >Settings</span>
-                                                    </li>
+                                                            data-background-color="#f0f1f2"
+                                                            data-text-color="gray"
+                                                            type="info"
+                                                            data-multiline="true"
+                                                            data-class="info-sky"
+                                                            data-html="true"
+                                                            data-tip="soon available :)"
+                                                        >Settings</span>
+                                                        </li>
                                                     <ReactTooltip />
+                                                    <li onClick={handleAuth}>Logout</li>
                                                 </ul>
                                         </div>}
                                     </IconButton>

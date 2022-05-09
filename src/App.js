@@ -10,6 +10,8 @@ import Chat from './components/Chat';
 import Sidebar from './components/Sidebar';
 import PrivRouteNavigate from './routes/Redirect';
 import { Navigate} from 'react-router-dom';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
 
 
@@ -17,6 +19,8 @@ function App() {
 
   const dispatch = useDispatch();
 
+ 
+    // AOS.init();
 
   useEffect(() => {
     auth.onAuthStateChanged((authUser) => {

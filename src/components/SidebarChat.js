@@ -1,13 +1,15 @@
-import React,{useEffect, useState} from 'react';
+import React,{useEffect, useState, useRef} from 'react';
 import { Avatar,IconButton } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import { db } from "../firebase";
 import { useSelector } from 'react-redux';
 import { storage } from '../firebase';
 
-const SidebarChat = ({id, name, addNewChat, photoUrl, collection}) => {
+
+const SidebarChat = ({id, name, addNewChat, photoUrl, collection , userId}) => {
 
   const [file, setFile] = useState();
+  const [fileURL, setFileURL] = useState();
   const [progress, setProgress] = useState(0);
   const [messages, setMessages] = useState([]);
   const [visible, setVisible] = useState(false);
@@ -34,11 +36,38 @@ const SidebarChat = ({id, name, addNewChat, photoUrl, collection}) => {
   const chatPhotoHandler = (e) => {
     e.preventDefault();
     const file = e.target.files[0];
-    uploadFiles(file);
+    setFile(file);
+    const fileUrl = URL.createObjectURL(file);
+    setFileURL(fileUrl);
   };
 
-  const uploadFiles = (file) => {
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    uploadFiles(file);
+  }
+
+  useEffect(() => {
+    if(chatName && photo){
+      db.collection('rooms').add({
+        creator: creator,
+        name: chatName,
+        photoUrl: photo
+      })
+      setNewChat({
+        ...newChat,
+        chatName: '',
+        photo: null,
+      })
+    }
+    setFile({});
+    setFileURL("");
+    setProgress(0);
+    setVisible(false);
+  }, [photo])
   
+
+  const uploadFiles = (file) => {
     const uploadTask = storage.ref(`files/${file.name}`).put(file);
     uploadTask.on(
       "state_changed",
@@ -61,26 +90,18 @@ const SidebarChat = ({id, name, addNewChat, photoUrl, collection}) => {
     );
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if(chatName && photo){
-      db.collection('rooms').add({
-        creator: creator,
-        name: chatName,
-        photoUrl: photo
-      })
-      setNewChat({
-        ...newChat,
-        chatName: '',
-        photo: null,
-      })
-    }
-  }
 
   const handleChange = (e) => {
     setNewChat({...newChat,chatName:e.target.value})
   };
 
+  const showLastUserMessage = () => {
+    if(messages.length){
+      const list = [...messages].filter(el => el.messageFrom === currentUser.uid)
+      let lastMessage = list[0];
+      return lastMessage.message
+    }
+  }
 
   return !addNewChat ? (
       <Link to={`/${collection}/${id}`}>
@@ -88,7 +109,8 @@ const SidebarChat = ({id, name, addNewChat, photoUrl, collection}) => {
           <Avatar src={photoUrl} alt={name}/>
           <div className="sidebarChat__info">
               <h2>{name}</h2>
-              <p>{messages[0]?.message}</p>
+              {collection==='rooms' && <p>{messages[0]?.message}</p>}
+              {collection==='users' && <p>{showLastUserMessage()}</p>} 
           </div> 
         </div>
       </Link>
@@ -108,11 +130,11 @@ const SidebarChat = ({id, name, addNewChat, photoUrl, collection}) => {
                         <input type="text" value={chatName} onChange={handleChange} placeholder='Chat name' required/>
                       </p>
                       <p>
-                        <input type="file" value={file} onChange={chatPhotoHandler} className="input" />
-                        {/* <Avatar src={photo ? photo : ''}  alt=""/> */}
-                        <p>{progress} %</p>
+                        <input type="file" onChange={chatPhotoHandler}/>
                       </p>
+                      {fileURL && <img className='sidebarChat__img' src={fileURL}/>}
                       <button onClick={handleSubmit}>Add new Chat</button>
+                      <p>{progress} %</p>
                 </div>
               </>
         }

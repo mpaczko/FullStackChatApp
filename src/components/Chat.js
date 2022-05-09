@@ -165,7 +165,7 @@ const Chat = () => {
                             </IconButton>
                         </div> */}
                     </div>
-                    <div  className="chat__body" data-aos="fade-up">
+                    <div  className="chat__body" >
                         {messages?.filter(el => el.messageFrom === UID).map((message,index) => (
                             <p  
                                 key={index}
