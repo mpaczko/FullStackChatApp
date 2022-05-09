@@ -36,6 +36,12 @@ const Users = ({children}) => {
         dispatch(logoutInitiate());
       }
     }
+
+    useEffect(() => {
+        setSideList(filteredUsers)
+    }, [filteredUsers])
+    
+
     const [sideList, setSideList] = useState(filteredUsers);
 
     const handleChange = (e) => {
