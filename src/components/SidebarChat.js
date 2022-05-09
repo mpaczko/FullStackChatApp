@@ -39,8 +39,10 @@ const SidebarChat = ({id, name, addNewChat, photoUrl, collection}) => {
     e.preventDefault();
     const file = e.target.files[0];
     setFile(file);
-    const fileUrl = URL.createObjectURL(file);
-    setFileURL(fileUrl);
+    if(fileRef.current.value){
+      const fileUrl = URL.createObjectURL(file);
+      setFileURL(fileUrl);
+    }
   };
 
 
@@ -50,10 +52,10 @@ const SidebarChat = ({id, name, addNewChat, photoUrl, collection}) => {
       uploadFiles(file);
       setError('');
     }
-    if(!newChat.chatName){
+    else if(!newChat.chatName){
       setError('Please provide chat name');
     }
-    if(!fileURL){
+    else if(!fileURL){
       setError('Please provide chat image');
     }
   }
@@ -89,7 +91,7 @@ const SidebarChat = ({id, name, addNewChat, photoUrl, collection}) => {
         );
         setProgress(prog);
       },
-      (error) => console.log(error),
+      (error) => alert("Sorry can't upload this picture file."),
       () => {
         storage
           .ref("files")
@@ -120,6 +122,16 @@ const SidebarChat = ({id, name, addNewChat, photoUrl, collection}) => {
 
   const fileRef = useRef();
 
+  const displayAddNewChat = () => {
+    setVisible(val => !val);
+    setNewChat({...newChat,chatName:''});
+    setFile({});
+    setFileURL("");
+    if(fileRef && fileRef?.current.value){
+      fileRef.current.value = '';
+    }
+
+  }
 
 
   return !addNewChat ? (
@@ -135,7 +147,7 @@ const SidebarChat = ({id, name, addNewChat, photoUrl, collection}) => {
       </Link>
   ) : (
       <>
-        <div onClick={() => setVisible(val => !val)}
+        <div onClick={displayAddNewChat}
           className='sidebarChat'>
             <Avatar src="+"  alt='+'/>
             <div className="sidebarChat__info">
