@@ -1,7 +1,8 @@
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
-import 'firebase/database';
+import 'firebase/compat/database';
+import "firebase/compat/storage";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAQBe_IR5SKSX1cZcALhbQf1VKvQAAFu3I",
@@ -19,7 +20,7 @@ const auth = firebase.auth();
 const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
 const facebookAuthProvider = new firebase.auth.FacebookAuthProvider();
 // const admin = firebase.admin();
+const storage = firebase.storage();
 
 
-export {auth, googleAuthProvider, facebookAuthProvider};
-export  default db;
+export {auth, googleAuthProvider, facebookAuthProvider, firebaseApp, storage, db, firebase as default};

@@ -1,27 +1,31 @@
-import React,{ useState, useEffect } from 'react'
+import React,{ useState, useEffect, useContext, useRef } from 'react'
 import '../styles/Chat.css'
 import { Avatar,IconButton } from '@material-ui/core';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import { AttachFile, Mic, InsertEmoticon, SearchOutlined } from '@material-ui/icons';
+import {InsertEmoticon} from '@material-ui/icons';
 import { useParams } from 'react-router-dom';
-import db from "../firebase";
+import {db} from "../firebase";
 import firebase from 'firebase/compat/app';
 import { useSelector } from 'react-redux';
+import { UserContext } from '../users/users.provider';
+import { useFocus } from '../utilities/useFocus';
+import Picker from 'emoji-picker-react';
 
 
 
 const Chat = () => {
 
-    const [input, setInput] = useState();
+    const [input, setInput] = useState([]);
+    const [chosenEmoji, setChosenEmoji] = useState(null);
+    const [picker, setPicker] = useState(false);
     const {id} = useParams();
     const [name, setName] = useState("");
     const [photoUrl, setPhotoUrl] = useState("")
     const [UID, setUID] = useState("");
     const [messages, setMessages] = useState([]);
-    // const [userMessages, setUserMessages] = useState([]);
+    const { idCU } = useContext(UserContext);
+    const [inputRef, setInputFocus] = useFocus()
     const slug = window.location.pathname.split('/')[1];
     const {currentUser} = useSelector((state) => state.user);
-
 
     useEffect(() => {
 
@@ -33,12 +37,22 @@ const Chat = () => {
                 setPhotoUrl(snapshot.data().photoUrl),
                 setUID(snapshot.data().userId)
             )); 
-            db.collection(slug)
-            .doc(id)
-            .collection('messages')
-            .orderBy('timestamp', 'asc').onSnapshot((snapshot) => (
-                setMessages(snapshot.docs.map((doc) => doc.data()))
-            )) 
+            if(slug==='rooms'){
+                db.collection(slug)
+                .doc(id)
+                .collection('messages')
+                .orderBy('timestamp', 'asc').onSnapshot((snapshot) => (
+                    setMessages(snapshot.docs.map((doc) => doc.data()))
+                ))
+            }
+            else if(slug==='users'){
+                db.collection('users')
+                .doc(idCU)
+                .collection('messages')
+                .orderBy('timestamp', 'asc').onSnapshot((snapshot) => (
+                    setMessages(snapshot.docs.map((doc) => doc.data()))
+                ))
+            }
         }
 
     }, [id])
@@ -66,16 +80,47 @@ const Chat = () => {
     const sendUserMessage = (e) => {
         e.preventDefault();
         if(input.trim()){
-            db.collection('messages').add({
-                userId: currentUser.uid,
+            db.collection(slug)
+            .doc(idCU)
+            .collection('messages').add({
+                messageFrom: UID,
                 message: input,
                 name: currentUser.displayName,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                receiverId: UID,
-            })
+                messageTo: currentUser.uid,
+                receiver: true
+            });
+
+            db.collection(slug)
+            .doc(id)
+            .collection('messages').add({
+                messageFrom: currentUser.uid,
+                message: input,
+                name: currentUser.displayName,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                messageTo: UID,
+            });
+
             setInput("");
         }
     }
+
+    const onEmojiClick = (event, emojiObject) => {
+        setChosenEmoji(emojiObject.emoji);
+        setInputFocus();
+        setPicker(false);
+    };
+
+    useEffect(() => {
+        if(input && chosenEmoji){
+            setInput(input+""+chosenEmoji)
+        }
+        if(!input){
+            setInput(chosenEmoji)
+        }
+    }, [chosenEmoji])
+    
+
 
   return (
       <>
@@ -84,7 +129,6 @@ const Chat = () => {
                         <Avatar src={photoUrl} alt={name}/>
                         <div className="chat__headerInfo">
                         <h3>{name}</h3>
-                        <h5>{UID}</h5>
                         {messages.length!==0 && slug==='rooms' &&
                             <p>last seen{" "}
                                 {new Date(
@@ -93,7 +137,7 @@ const Chat = () => {
                             </p>
                         }
                     </div>
-                    <div className="chat__headerRight">
+                    {/* <div className="chat__headerRight">
                             <IconButton>
                                 <SearchOutlined/>
                             </IconButton>
@@ -103,15 +147,14 @@ const Chat = () => {
                             <IconButton>
                                 <MoreVertIcon/>
                             </IconButton>
-                        </div>
+                        </div> */}
                     </div>
                     <div className="chat__body">
-                        {messages?.map((message) => (
+                        {messages?.filter(el => el.messageFrom === UID).map((message) => (
                             <p
-                                className={`chat__message ${currentUser.uid===message.userId && "chat__reciever"}`}>
+                                className={`chat__message ${message?.receiver===true && "chat__reciever"}`}>
                                 {slug==='rooms' && <span className='chat__name'>{message.name}</span>}
                                 {message.message}
-                                <h4>{message.userId}</h4>
                                 <span className='chat__timestamp'>
                                 {new Date(message.timestamp?.toDate()).toUTCString()}
                                 </span>
@@ -119,19 +162,27 @@ const Chat = () => {
                         ))}
                     </div>
                     <div className="chat__footer">
-                        <InsertEmoticon/>
+                        <IconButton onClick={()=>setPicker(state => !state)}>
+                            <InsertEmoticon/>
+                        </IconButton>
+                        <div>
+                        {picker ? <Picker onEmojiClick={onEmojiClick} /> : ""}
+                        </div>
+                        {chosenEmoji ? (
+                            <span>{chosenEmoji?.emoji}</span>
+                        ) : ""}
                         <form>
                             <input 
+                                ref={inputRef}
                                 value={input}
                                 onChange={handleChange} 
                                 placeholder='Type a message' 
                                 type="text">
                             </input>
                             <button onClick={slug==='rooms' ? sendMessage : sendUserMessage} type="submit">
-                                Send a message
+                                Send
                             </button>
                         </form>
-                        <Mic/>
                     </div>
                 </div>
         </>
@@ -141,30 +192,3 @@ const Chat = () => {
 
 export default Chat
 
-
-
-    // .onSnapshot((snapshot) => {
-    //     const messagesArr = [];
-    //     snapshot.forEach((doc) => {
-    //         messagesArr.push(doc.data())
-    //     })
-    //     const userMessages = [...messagesArr].filter(el => el.receiverId == UID)
-
-    //     setMessages(userMessages)
-    //     // setMessages(messagesArr)
-    // }) 
-
-    // .onSnapshot((snapshot) => (
-    //     setMessages(snapshot.docs.map((doc) => doc.data()))
-    // )) 
-
- 
-    // if(messages.length){
-    //     console.log('ess')
-    //     console.log(UID)
-    //     console.log(currentUser.uid)
-    //     console.log('ess')
-    //     const newMessages = [...messages].filter(el => el.receiverId === UID || el.userId === currentUser.uid);
-    //     // setUserMessages(newMessages)
-    //     console.log(newMessages)
-    // }

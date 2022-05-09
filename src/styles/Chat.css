@@ -1,7 +1,7 @@
 .chat{
     display: flex;
     flex-direction: column;
-    flex: 0.65;
+    width: 50vw;
 }
 
 
@@ -64,6 +64,7 @@
 }
 
 .chat__footer{
+    position: relative !important;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -74,17 +75,26 @@
 .chat__footer > form{
     flex: 1;
     display: flex;
+    justify-content: space-between;
 }
 
 .chat__footer > form > input{
-    flex: 1;
+    flex:0.9;
     border-radius: 30px;
     padding: 10px;
     border: none;
 }
 
 .chat__footer > form > button{
-    display: none;
+    cursor: pointer;
+    flex:0.1;
+    margin-left: 10px;
+    border-radius: 30px;
+    border: none;
+    margin-right: 10px;
+    color: white;
+    font-weight: 600;
+    background-color: rgb(236, 136, 253);
 
 }
 
@@ -92,4 +102,13 @@
     padding: 10px;
     color: gray;
     
+}
+
+.emoji-picker-react{
+    position: absolute !important;
+    bottom:50px !important;
+}
+
+.aside.emoji-picker-react {
+    border-radius: 20px !important;
 }

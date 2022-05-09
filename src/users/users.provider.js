@@ -1,15 +1,17 @@
 import React, { useState, createContext,useEffect } from 'react';
-import db from '../firebase';
+import {db} from '../firebase';
 import {  useSelector } from 'react-redux';
 
 
 
 const data = [];
 const filteredData =[];
+let id;
 
 const initialContextState = {
     data,
     filteredData,
+    id,
     getUsers: () => {},
     filterUsers: () =>{},
 };
@@ -21,6 +23,7 @@ const UserStoreProvider = ({children}) => {
 
     const [users, setUsers] = useState(data);
     const [filteredUsers, setFilteredUsers] = useState([]);
+    const [idCU, setIdCU] = useState();
     const [loading, setLoading] = useState(false);
     const {currentUser} = useSelector((state) => state.user);
 
@@ -43,6 +46,8 @@ const UserStoreProvider = ({children}) => {
 
     useEffect(() => {
         const usersList = [...users].filter(el => el.data.userId !== userUid);
+        const userCurrent = [...users].filter(el => el.data.userId === userUid);
+        setIdCU(userCurrent[0]?.id)
         setFilteredUsers(usersList)
         setLoading(false)
     }, [users])
@@ -51,7 +56,7 @@ const UserStoreProvider = ({children}) => {
 
 
     return (
-        <UserContext.Provider value={{users, filteredUsers, getUsers}}>
+        <UserContext.Provider value={{users, filteredUsers, idCU, getUsers}}>
             {children}
         </UserContext.Provider>
     )

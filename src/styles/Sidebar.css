@@ -1,7 +1,8 @@
 .sidebar{
     display: flex;
     flex-direction: column;
-    flex: 0.35;
+    min-width: 400px;
+    width: 35vw;
 }
 
 .sidebar__header{
@@ -9,6 +10,7 @@
     justify-content: space-between;
     padding: 20px;
     border-right: 1px solid lightgray;
+    align-items: center;
 }
 
 .sidebar__headerRight{
@@ -62,4 +64,10 @@
 a{
     text-decoration: none !important;
     color: black;
+}
+
+@media screen and (max-width: 600px){
+    .sidebar{
+        width: 100%;
+    }
 }

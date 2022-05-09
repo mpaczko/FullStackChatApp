@@ -10,15 +10,19 @@ import { Avatar,IconButton} from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutInitiate } from '../redux/actions';
 import { UserContext } from '../users/users.provider';
+import {returnName} from '../utilities/returnName';
 
 
 const Users = ({children}) => {
 
     const { getUsers } = useContext(UserContext);
+    const [searchState, setSearchState] = useState();
   
     useLayoutEffect(() => {
       getUsers();
     }, []);
+
+    const { filteredUsers } = useContext(UserContext);
 
     const {currentUser} = useSelector((state) => state.user);
     const dispatch = useDispatch();
@@ -29,19 +33,34 @@ const Users = ({children}) => {
         dispatch(logoutInitiate());
       }
     }
-    const { filteredUsers } = useContext(UserContext);
+    const [sideList, setSideList] = useState(filteredUsers);
+
+    const handleChange = (e) => {
+        setSearchState(e.target.value)
+    };
+
+    useEffect(() => {
+        if(searchState){
+            let searchToLower = searchState.trim().toLowerCase();
+            const newSideList = filteredUsers.filter(el => el.data.name.toLowerCase().includes(searchToLower));
+            setSideList(newSideList)
+        }
+        if(!searchState){
+            setSideList(filteredUsers)
+        }
+    }, [searchState])
+    
 
 
-    return filteredUsers &&  
+    return   (
                         <>
-                                    Welcome {currentUser?.displayName}
-                                    <button onClick={handleAuth}>Logout</button>
                                     <div className="app__body">
                                         <div className='sidebar'>
                                             <div className="sidebar__header">
                                                 <Avatar src={currentUser?.photoURL} alt=""/>
+                                                Hello {returnName(currentUser?.displayName)}!
+                                                <IconButton onClick={handleAuth}>Logout</IconButton>
                                                 <div className="sidebar__headerRight">
-                                                    <h5>{currentUser?.uid}</h5>
                                                     <IconButton onClick={()=>navigate('/')}>
                                                         <PeopleIcon/>
                                                     </IconButton>
@@ -56,11 +75,14 @@ const Users = ({children}) => {
                                             <div className="sidebar__search">
                                                 <div className="sidebar__searchContainer">
                                                     <SearchOutlined/>
-                                                    <input placeholder='Search user' type="text"/>
+                                                    <input placeholder='Search user' 
+                                                    value={searchState} 
+                                                    onChange={handleChange}
+                                                    type="text"/>
                                                 </div>
                                             </div>
                                             <div className="sidebar__chats">
-                                                {filteredUsers.map(user => (
+                                                {sideList && sideList?.map(user => (
                                                     <SidebarChat 
                                                         collection={'users'}
                                                         key={user.id}
@@ -73,7 +95,7 @@ const Users = ({children}) => {
                                         </div>
                                         {children}
                                     </div>
-                        </>
+                        </>)
   
 }
 

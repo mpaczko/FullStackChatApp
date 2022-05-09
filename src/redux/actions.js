@@ -1,6 +1,6 @@
 import * as types from './actionTypes';
 import {auth, googleAuthProvider, facebookAuthProvider } from '../firebase';
-import db from "../firebase";
+import {db} from "../firebase";
 
 
 const registerStart = () => ({
@@ -99,6 +99,7 @@ const addSMUserToCollection = (user) => {
         if(!checkUser.length){
             db.collection('users')
                 .add({
+                    email: user.email,
                     name: user.displayName,
                     userId: user.uid,
                     photoUrl: user.photoURL
