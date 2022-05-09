@@ -2,24 +2,22 @@ import React,{useEffect, useState} from 'react'
 import '../styles/SidebarChat.css'
 import { Avatar,IconButton } from '@material-ui/core';
 import { Link } from 'react-router-dom';
-import { db } from "../firebase";
+import db,{firebaseApp} from "../firebase";
 import { useSelector } from 'react-redux';
-import { storage } from '../firebase';
+import firebase from 'firebase/app';
+import 'firebase/storage';
+
 
 const SidebarChat = ({id, name, addNewChat, photoUrl, collection}) => {
 
-  const [file, setFile] = useState();
-  const [progress, setProgress] = useState(0);
   const [messages, setMessages] = useState([]);
   const [visible, setVisible] = useState(false);
   const {currentUser} = useSelector((state) => state.user);
   const [newChat, setNewChat] = useState({
     creator: currentUser.uid,
-    chatName:'',
-    photo: null,
-  });
+    name:'',
 
-  const {creator, chatName, photo} = newChat; 
+  });
 
   useEffect(() => {
     if(id){
@@ -29,58 +27,27 @@ const SidebarChat = ({id, name, addNewChat, photoUrl, collection}) => {
       ))
     }
   }, [])
-
-
-  const chatPhotoHandler = (e) => {
-    e.preventDefault();
-    const file = e.target.files[0];
-    uploadFiles(file);
-  };
-
-  const uploadFiles = (file) => {
   
-    const uploadTask = storage.ref(`files/${file.name}`).put(file);
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        const prog = Math.round(
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-        );
-        setProgress(prog);
-      },
-      (error) => console.log(error),
-      () => {
-        storage
-          .ref("files")
-          .child(file.name)
-          .getDownloadURL()
-          .then((url) => {
-            setNewChat({...newChat, photo: url});
-          });
-      }
-    );
-  };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if(chatName && photo){
-      db.collection('rooms').add({
-        creator: creator,
-        name: chatName,
-        photoUrl: photo
-      })
-      setNewChat({
-        ...newChat,
-        chatName: '',
-        photo: null,
-      })
-    }
+  const onFileChange = (e) => {
+    const file = e.target.files[0]
+    const storageRef = firebaseApp.storage().ref()
+    const  fileRef = storageRef.child(file.name)
+    fileRef.put(file).then(()=> {
+      console.log('file put')
+    })
   }
 
-  const handleChange = (e) => {
-    setNewChat({...newChat,chatName:e.target.value})
-  };
+  const createChat = () => {
+    const roomName = prompt("Please enter name for chat");
 
+    if(roomName && currentUser){
+      db.collection("rooms").add({
+        creator: currentUser.uid,
+        name: roomName,
+      })
+    }
+  };
 
   return !addNewChat ? (
       <Link to={`/${collection}/${id}`}>
@@ -102,19 +69,17 @@ const SidebarChat = ({id, name, addNewChat, photoUrl, collection}) => {
             </div>
         </div>
         {visible && 
-              <>
-                <div className='sidebarChat'>
-                      <p>
-                        <input type="text" value={chatName} onChange={handleChange} placeholder='Chat name' required/>
-                      </p>
-                      <p>
-                        <input type="file" value={file} onChange={chatPhotoHandler} className="input" />
-                        {/* <Avatar src={photo ? photo : ''}  alt=""/> */}
-                        <p>{progress} %</p>
-                      </p>
-                      <button onClick={handleSubmit}>Add new Chat</button>
-                </div>
-              </>
+              <div className='sidebarChat'>
+                  <div className="sidebarChat__info">
+                    <p>Name:
+                      <input />
+                    </p>
+                    <p>Photo:
+                      <input type="file" onChange={onFileChange}/>
+                    </p>
+                    <button type='submit' onClick={createChat}>Submit</button>
+                  </div>
+              </div>
         }
       </>
   )
@@ -122,5 +87,3 @@ const SidebarChat = ({id, name, addNewChat, photoUrl, collection}) => {
 }
 
 export default SidebarChat
-
-

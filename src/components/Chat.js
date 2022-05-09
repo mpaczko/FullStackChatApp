@@ -3,7 +3,7 @@ import '../styles/Chat.css'
 import { Avatar,IconButton } from '@material-ui/core';
 import {InsertEmoticon} from '@material-ui/icons';
 import { useParams } from 'react-router-dom';
-import {db} from "../firebase";
+import db from "../firebase";
 import firebase from 'firebase/compat/app';
 import { useSelector } from 'react-redux';
 import { UserContext } from '../users/users.provider';
@@ -14,7 +14,7 @@ import Picker from 'emoji-picker-react';
 
 const Chat = () => {
 
-    const [input, setInput] = useState([]);
+    const [input, setInput] = useState();
     const [chosenEmoji, setChosenEmoji] = useState(null);
     const [picker, setPicker] = useState(false);
     const {id} = useParams();
@@ -106,7 +106,7 @@ const Chat = () => {
     }
 
     const onEmojiClick = (event, emojiObject) => {
-        setChosenEmoji(emojiObject.emoji);
+        setChosenEmoji(emojiObject.emoji+" ");
         setInputFocus();
         setPicker(false);
     };
@@ -192,3 +192,40 @@ const Chat = () => {
 
 export default Chat
 
+            // const fileredMessages = [...messages].filter(el => el.receiverId === UID)
+            // setMessages(fileredMessages)
+
+            //     db.collection(slug)
+            //     .doc(idCU)
+            //     .collection('messages')
+            //     .orderBy('timestamp', 'asc').onSnapshot((snapshot) => (
+            //         setMessages(snapshot.docs.map((doc) => doc.data())),
+            //         console.log(snapshot.docs.map((doc) => doc.data()))
+            //     ))
+
+
+    // .onSnapshot((snapshot) => {
+    //     const messagesArr = [];
+    //     snapshot.forEach((doc) => {
+    //         messagesArr.push(doc.data())
+    //     })
+    //     const userMessages = [...messagesArr].filter(el => el.receiverId == UID)
+
+    //     setMessages(userMessages)
+    //     // setMessages(messagesArr)
+    // }) 
+
+    // .onSnapshot((snapshot) => (
+    //     setMessages(snapshot.docs.map((doc) => doc.data()))
+    // )) 
+
+ 
+    // if(messages.length){
+    //     console.log('ess')
+    //     console.log(UID)
+    //     console.log(currentUser.uid)
+    //     console.log('ess')
+    //     const newMessages = [...messages].filter(el => el.receiverId === UID || el.userId === currentUser.uid);
+    //     // setUserMessages(newMessages)
+    //     console.log(newMessages)
+    // }

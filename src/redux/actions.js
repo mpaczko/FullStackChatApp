@@ -1,6 +1,6 @@
 import * as types from './actionTypes';
 import {auth, googleAuthProvider, facebookAuthProvider } from '../firebase';
-import {db} from "../firebase";
+import db from "../firebase";
 
 
 const registerStart = () => ({

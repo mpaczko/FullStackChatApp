@@ -2,7 +2,7 @@ import React,{useState,useEffect} from 'react';
 import "../styles/Sidebar.css";
 import { SearchOutlined } from '@material-ui/icons';
 import SidebarChat from './SidebarChat';
-import {db} from "../firebase";
+import db from "../firebase";
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ForumIcon from '@material-ui/icons/Forum';
 import PeopleIcon from '@material-ui/icons/People';
@@ -76,7 +76,6 @@ const Sidebar = ({children}) => {
                                     collection={'rooms'}
                                     key={room.id}
                                     id={room.id}
-                                    photoUrl={room.data?.photoUrl}
                                     name={room.data.name}
                                 />
                             ))}

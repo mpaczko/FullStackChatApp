@@ -52,14 +52,14 @@ const Users = ({children}) => {
     
 
 
-    return   (
+    return sideList &&  
                         <>
                                     <div className="app__body">
                                         <div className='sidebar'>
                                             <div className="sidebar__header">
                                                 <Avatar src={currentUser?.photoURL} alt=""/>
-                                                Hello {returnName(currentUser?.displayName)}!
-                                                <IconButton onClick={handleAuth}>Logout</IconButton>
+                                                Welcome {returnName(currentUser?.displayName)} !
+                                                <button onClick={handleAuth}>Logout</button>
                                                 <div className="sidebar__headerRight">
                                                     <IconButton onClick={()=>navigate('/')}>
                                                         <PeopleIcon/>
@@ -82,7 +82,7 @@ const Users = ({children}) => {
                                                 </div>
                                             </div>
                                             <div className="sidebar__chats">
-                                                {sideList && sideList?.map(user => (
+                                                {sideList?.map(user => (
                                                     <SidebarChat 
                                                         collection={'users'}
                                                         key={user.id}
@@ -95,7 +95,7 @@ const Users = ({children}) => {
                                         </div>
                                         {children}
                                     </div>
-                        </>)
+                        </>
   
 }
 

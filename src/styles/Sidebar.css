@@ -1,8 +1,7 @@
 .sidebar{
     display: flex;
     flex-direction: column;
-    min-width: 400px;
-    width: 35vw;
+    flex: 0.35;
 }
 
 .sidebar__header{
@@ -64,10 +63,4 @@
 a{
     text-decoration: none !important;
     color: black;
-}
-
-@media screen and (max-width: 600px){
-    .sidebar{
-        width: 100%;
-    }
 }
