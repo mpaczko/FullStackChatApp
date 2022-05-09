@@ -1,5 +1,4 @@
-import React,{useState,useEffect} from 'react'
-import "../styles/Sidebar.css"
+import React,{useState,useEffect} from 'react';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ForumIcon from '@material-ui/icons/Forum';
 import PeopleIcon from '@material-ui/icons/People';

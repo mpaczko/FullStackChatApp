@@ -1,20 +1,22 @@
-import React,{ useState, useEffect, useContext, useRef } from 'react'
-import '../styles/Chat.css'
+import React,{ useState, useEffect, useContext, useRef } from 'react';
 import { Avatar,IconButton } from '@material-ui/core';
 import {InsertEmoticon} from '@material-ui/icons';
 import { useParams } from 'react-router-dom';
-import db from "../firebase";
+import {db} from "../firebase";
 import firebase from 'firebase/compat/app';
 import { useSelector } from 'react-redux';
 import { UserContext } from '../users/users.provider';
 import { useFocus } from '../utilities/useFocus';
 import Picker from 'emoji-picker-react';
+import { gsap } from 'gsap';
 
 
+ 
 
 const Chat = () => {
 
-    const [input, setInput] = useState();
+
+    const [input, setInput] = useState([]);
     const [chosenEmoji, setChosenEmoji] = useState(null);
     const [picker, setPicker] = useState(false);
     const {id} = useParams();
@@ -27,6 +29,8 @@ const Chat = () => {
     const slug = window.location.pathname.split('/')[1];
     const {currentUser} = useSelector((state) => state.user);
 
+      
+
     useEffect(() => {
 
         if(id && slug){
@@ -36,7 +40,7 @@ const Chat = () => {
                 setName(snapshot.data().name),
                 setPhotoUrl(snapshot.data().photoUrl),
                 setUID(snapshot.data().userId)
-            )); 
+            ));
             if(slug==='rooms'){
                 db.collection(slug)
                 .doc(id)
@@ -106,7 +110,7 @@ const Chat = () => {
     }
 
     const onEmojiClick = (event, emojiObject) => {
-        setChosenEmoji(emojiObject.emoji+" ");
+        setChosenEmoji(emojiObject.emoji);
         setInputFocus();
         setPicker(false);
     };
@@ -116,16 +120,28 @@ const Chat = () => {
             setInput(input+""+chosenEmoji)
         }
         if(!input){
-            setInput(chosenEmoji)
+            setInput(chosenEmoji => chosenEmoji)
         }
     }, [chosenEmoji])
-    
+
+
+    const boxRef = useRef();
+
+    useEffect(() => {
+        gsap.fromTo(boxRef.current, {opacity: 0,x:'-200px'},{duration:0.7,opacity: 1,x:'0'})
+    },[id]);
+
+
+    const chatReciver = {
+        marginLeft: "auto",
+        backgroundColor: "#dcf8c6",
+    }
 
 
   return (
-      <>
-            <div className='chat'>
-                    <div className="chat__header">
+            <div ref={boxRef}
+                className='chat'>
+                    <div  className="chat__header">
                         <Avatar src={photoUrl} alt={name}/>
                         <div className="chat__headerInfo">
                         <h3>{name}</h3>
@@ -149,10 +165,12 @@ const Chat = () => {
                             </IconButton>
                         </div> */}
                     </div>
-                    <div className="chat__body">
-                        {messages?.filter(el => el.messageFrom === UID).map((message) => (
-                            <p
-                                className={`chat__message ${message?.receiver===true && "chat__reciever"}`}>
+                    <div  className="chat__body" data-aos="fade-up">
+                        {messages?.filter(el => el.messageFrom === UID).map((message,index) => (
+                            <p  
+                                key={index}
+                                className={`chat__message`}
+                                style={ message?.receiver===true || message.userId===currentUser.uid ? chatReciver : {}}>
                                 {slug==='rooms' && <span className='chat__name'>{message.name}</span>}
                                 {message.message}
                                 <span className='chat__timestamp'>
@@ -185,47 +203,9 @@ const Chat = () => {
                         </form>
                     </div>
                 </div>
-        </>
 
   )
 }
 
 export default Chat
 
-            // const fileredMessages = [...messages].filter(el => el.receiverId === UID)
-            // setMessages(fileredMessages)
-
-            //     db.collection(slug)
-            //     .doc(idCU)
-            //     .collection('messages')
-            //     .orderBy('timestamp', 'asc').onSnapshot((snapshot) => (
-            //         setMessages(snapshot.docs.map((doc) => doc.data())),
-            //         console.log(snapshot.docs.map((doc) => doc.data()))
-            //     ))
-
-
-    // .onSnapshot((snapshot) => {
-    //     const messagesArr = [];
-    //     snapshot.forEach((doc) => {
-    //         messagesArr.push(doc.data())
-    //     })
-    //     const userMessages = [...messagesArr].filter(el => el.receiverId == UID)
-
-    //     setMessages(userMessages)
-    //     // setMessages(messagesArr)
-    // }) 
-
-    // .onSnapshot((snapshot) => (
-    //     setMessages(snapshot.docs.map((doc) => doc.data()))
-    // )) 
-
- 
-    // if(messages.length){
-    //     console.log('ess')
-    //     console.log(UID)
-    //     console.log(currentUser.uid)
-    //     console.log('ess')
-    //     const newMessages = [...messages].filter(el => el.receiverId === UID || el.userId === currentUser.uid);
-    //     // setUserMessages(newMessages)
-    //     console.log(newMessages)
-    // }

@@ -1,5 +1,5 @@
 import React, { useState, createContext,useEffect } from 'react';
-import db from '../firebase';
+import {db} from '../firebase';
 import {  useSelector } from 'react-redux';
 
 

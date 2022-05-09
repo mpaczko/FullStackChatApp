@@ -1,9 +1,9 @@
 import React,{ useContext, useState, useEffect, useCallback,useLayoutEffect } from 'react';
-import "../styles/Sidebar.css";
 import { SearchOutlined } from '@material-ui/icons';
 import SidebarChat from './SidebarChat';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ForumIcon from '@material-ui/icons/Forum';
+import EventNoteIcon from '@material-ui/icons/EventNote';
 import PeopleIcon from '@material-ui/icons/People';
 import { useNavigate } from 'react-router-dom';
 import { Avatar,IconButton} from '@material-ui/core';
@@ -11,12 +11,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { logoutInitiate } from '../redux/actions';
 import { UserContext } from '../users/users.provider';
 import {returnName} from '../utilities/returnName';
+import useComponentVisible from '../utilities/useCompVisibleHook';
+import ReactTooltip from 'react-tooltip';
 
 
 const Users = ({children}) => {
 
     const { getUsers } = useContext(UserContext);
     const [searchState, setSearchState] = useState();
+    const { ref,isComponentVisible, setIsComponentVisible } = useComponentVisible(false);
   
     useLayoutEffect(() => {
       getUsers();
@@ -52,14 +55,15 @@ const Users = ({children}) => {
     
 
 
-    return sideList &&  
+
+    return   (
                         <>
                                     <div className="app__body">
                                         <div className='sidebar'>
                                             <div className="sidebar__header">
                                                 <Avatar src={currentUser?.photoURL} alt=""/>
-                                                Welcome {returnName(currentUser?.displayName)} !
-                                                <button onClick={handleAuth}>Logout</button>
+                                                Hello {returnName(currentUser?.displayName)}!
+
                                                 <div className="sidebar__headerRight">
                                                     <IconButton onClick={()=>navigate('/')}>
                                                         <PeopleIcon/>
@@ -67,8 +71,28 @@ const Users = ({children}) => {
                                                     <IconButton onClick={()=>navigate('/rooms')}>
                                                         <ForumIcon/>
                                                     </IconButton>
-                                                    <IconButton>
-                                                        <MoreVertIcon/>
+                                                    {/* <IconButton>
+                                                        <EventNoteIcon/>
+                                                    </IconButton> */}
+                                                    <IconButton ref={ref}>
+                                                        <MoreVertIcon onClick={() => setIsComponentVisible(val => !val)} />
+                                                            {isComponentVisible &&  
+                                                                <div className='headerRight__more'>
+                                                                    <ul>
+                                                                        <li onClick={handleAuth}>Logout</li>
+                                                                        <li><span
+                                                                            data-background-color="#f0f1f2"
+                                                                            data-text-color="gray"
+                                                                            type="info"
+                                                                            data-multiline="true"
+                                                                            data-class="info-sky"
+                                                                            data-html="true"
+                                                                            data-tip="soon available :)"
+                                                                        >Settings</span>
+                                                                        </li>
+                                                                        <ReactTooltip />
+                                                                    </ul>
+                                                            </div>}
                                                     </IconButton>
                                                 </div>
                                             </div>
@@ -82,7 +106,7 @@ const Users = ({children}) => {
                                                 </div>
                                             </div>
                                             <div className="sidebar__chats">
-                                                {sideList?.map(user => (
+                                                {sideList && sideList?.map(user => (
                                                     <SidebarChat 
                                                         collection={'users'}
                                                         key={user.id}
@@ -95,7 +119,7 @@ const Users = ({children}) => {
                                         </div>
                                         {children}
                                     </div>
-                        </>
+                        </>)
   
 }
 

@@ -7,6 +7,7 @@ import { Provider } from 'react-redux';
 import { store } from './redux/store';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import UserStoreProvider from './users/users.provider';
+import './styles/theme.scss';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
