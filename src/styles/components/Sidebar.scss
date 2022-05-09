@@ -5,17 +5,34 @@
     width: 35vw;
     position: relative;
     z-index: 1;
-    -webkit-box-shadow: -10px 6px 16px 2px rgba(57, 57, 57, 0.12);
-    -moz-box-shadow: -10px 6px 16px 2px rgba(57, 57, 57, 0.12);
-    box-shadow: -10px 6px 16px 2px rgba(57, 57, 57, 0.12);
+    -webkit-box-shadow: -10px 0px 20px 2px rgba(57, 57, 57, 0.12);
+    -moz-box-shadow: -10px 0px 20px 2px rgba(57, 57, 57, 0.12);
+    box-shadow: -10px 0px 20px 2px rgba(57, 57, 57, 0.12);
+
+
 }
 
 .sidebar__header{
     display: flex;
     justify-content: space-between;
     padding: 20px;
-    border-right: 1px solid lightgray;
+    background-color: #fff;
     align-items: center;
+    border-bottom:1px solid #f7f7f7;
+    &Avatar{
+        border: 2px solid #0a11eb;
+        border-radius: 50%;
+    }
+    p{
+        width: 40%;
+        min-width: 150px;
+        font-weight: 500;
+        color: #000;
+        span{
+            color: #0a11eb;
+        }
+    }
+    
 }
 
 .sidebar__headerRight{
@@ -60,31 +77,35 @@
 .sidebar__search{
     display: flex;
     align-items: center;
-    background-color: #f6f6f6;
+    background-color: #fff;
     height: 39px;
     padding: 10px;
+    border-bottom:1px solid #f7f7f7;
+    &Container{
+        display: flex;
+        align-items: center;
+        background-color: white;
+        width: 100%;
+        height: 35px;
+        border-radius: 20px;
+        background-color: #f7f7f7;
+        .MuiSvgIcon-root{
+            padding: 10px;
+        }
+        input{
+            border: none;
+            outline: none;
+            display: flex;
+            flex:1;
+            background-color: #f7f7f7;
+        }
+    }
+
 }
 
-.sidebar__searchContainer{
-    display: flex;
-    align-items: center;
-    background-color: white;
-    width: 100%;
-    height: 35px;
-    border-radius: 20px;
-}
- 
-.sidebar__searchContainer > .MuiSvgIcon-root{
-    color: gray;
-    padding: 10px;
-}
 
-.sidebar__searchContainer > input{
-    border: none;
-    outline: none;
-    margin-left: 10px;
-    display: flex;
-    flex:0.9;
+.sidebar__headerRight button svg{
+    color: black;
 }
 
 .sidebar__chats{
@@ -101,5 +122,17 @@ a{
 @media screen and (max-width: 600px){
     .sidebar{
         width: 100%;
+        min-width: unset !important;
     }
+    .sidebar__chats{
+        display: flex;
+        flex-direction: row;
+    }
+    .sidebarChat__info{
+        display: none;
+    }
+    .sidebar__header p{
+        margin-left: 10px;
+        min-width: unset !important;
+    } 
 }

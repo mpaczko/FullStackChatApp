@@ -11,8 +11,6 @@ import Picker from 'emoji-picker-react';
 import { gsap } from 'gsap';
 
 
- 
-
 const Chat = () => {
 
 
@@ -29,7 +27,7 @@ const Chat = () => {
     const slug = window.location.pathname.split('/')[1];
     const {currentUser} = useSelector((state) => state.user);
 
-      
+
 
     useEffect(() => {
 
@@ -134,7 +132,10 @@ const Chat = () => {
 
     const chatReciver = {
         marginLeft: "auto",
-        backgroundColor: "#dcf8c6",
+        color:"#fff",
+        boxShadow: "8px 8px 24px 0px rgba(66, 68, 90, 1)",
+        backgroundColor:"#0a11eb",
+        fontWeight:600
     }
 
 
@@ -142,17 +143,17 @@ const Chat = () => {
             <div ref={boxRef}
                 className='chat'>
                     <div  className="chat__header">
-                        <Avatar src={photoUrl} alt={name}/>
+                        <div className="chat__headerAvatar"><Avatar src={photoUrl} alt={name}/></div>
                         <div className="chat__headerInfo">
-                        <h3>{name}</h3>
-                        {messages.length!==0 && slug==='rooms' &&
-                            <p>last seen{" "}
-                                {new Date(
-                                    messages[messages.length -1]?.timestamp?.toDate()).toUTCString()
-                                }
-                            </p>
-                        }
-                    </div>
+                            <h3>{name}</h3>
+                            {messages.length!==0 && slug==='rooms' &&
+                                <p>last seen{" "}
+                                    {new Date(
+                                        messages[messages.length -1]?.timestamp?.toDate()).toUTCString()
+                                    }
+                                </p>
+                            }
+                        </div>
                     {/* <div className="chat__headerRight">
                             <IconButton>
                                 <SearchOutlined/>

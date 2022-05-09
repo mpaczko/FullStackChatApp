@@ -75,8 +75,8 @@ const Sidebar = ({children}) => {
                 <div className="app__body">
                     <div className='sidebar'>
                         <div className="sidebar__header">
-                            <Avatar src={currentUser?.photoURL} alt=""/>
-                            Hello {returnName(currentUser?.displayName)}!
+                            <div className='sidebar__headerAvatar'><Avatar src={currentUser?.photoURL} alt=""/></div>
+                            <p>Hello <span>{returnName(currentUser?.displayName)}</span> !</p>
                             <div className="sidebar__headerRight">
                                 <IconButton onClick={()=>navigate('/')}>
                                     <PeopleIcon/>
@@ -87,8 +87,8 @@ const Sidebar = ({children}) => {
                                 {/* <IconButton>
                                     <EventNoteIcon/>
                                 </IconButton> */}
-                                <IconButton ref={ref}>
-                                    <MoreVertIcon onClick={() => setIsComponentVisible(val => !val)} />
+                                <IconButton onClick={() => setIsComponentVisible(val => !val)} ref={ref}>
+                                    <MoreVertIcon />
                                         {isComponentVisible &&  
                                             <div className='headerRight__more'>
                                                 <ul>
@@ -112,7 +112,7 @@ const Sidebar = ({children}) => {
                         <div className="sidebar__search">
                             <div className="sidebar__searchContainer">
                                 <SearchOutlined/>
-                                <input placeholder='Search user' 
+                                <input placeholder='Search group chat' 
                                                     value={searchState} 
                                                     onChange={handleChange}
                                                     type="text"/>

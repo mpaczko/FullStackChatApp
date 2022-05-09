@@ -4,15 +4,17 @@ import { Link } from 'react-router-dom';
 import { db } from "../firebase";
 import { useSelector } from 'react-redux';
 import { storage } from '../firebase';
+import ForumIcon from '@material-ui/icons/PeopleOutline';
 
 
-const SidebarChat = ({id, name, addNewChat, photoUrl, collection , userId}) => {
+const SidebarChat = ({id, name, addNewChat, photoUrl, collection}) => {
 
   const [file, setFile] = useState();
   const [fileURL, setFileURL] = useState();
   const [progress, setProgress] = useState(0);
   const [messages, setMessages] = useState([]);
   const [visible, setVisible] = useState(false);
+  const [error, setError] = useState();
   const {currentUser} = useSelector((state) => state.user);
   const [newChat, setNewChat] = useState({
     creator: currentUser.uid,
@@ -43,9 +45,19 @@ const SidebarChat = ({id, name, addNewChat, photoUrl, collection , userId}) => {
 
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    uploadFiles(file);
+    if(newChat.chatName && fileURL){
+      e.preventDefault();
+      uploadFiles(file);
+      setError('');
+    }
+    if(!newChat.chatName){
+      setError('Please provide chat name');
+    }
+    if(!fileURL){
+      setError('Please provide chat image');
+    }
   }
+
 
   useEffect(() => {
     if(chatName && photo){
@@ -96,12 +108,19 @@ const SidebarChat = ({id, name, addNewChat, photoUrl, collection , userId}) => {
   };
 
   const showLastUserMessage = () => {
-    if(messages.length){
+    if(messages && messages.length){
       const list = [...messages].filter(el => el.messageFrom === currentUser.uid)
       let lastMessage = list[0];
-      return lastMessage.message
+      return lastMessage?.message
+    }
+    else{
+      return
     }
   }
+
+  const fileRef = useRef();
+
+
 
   return !addNewChat ? (
       <Link to={`/${collection}/${id}`}>
@@ -125,16 +144,27 @@ const SidebarChat = ({id, name, addNewChat, photoUrl, collection , userId}) => {
         </div>
         {visible && 
               <>
-                <div className='sidebarChat'>
-                      <p>
-                        <input type="text" value={chatName} onChange={handleChange} placeholder='Chat name' required/>
-                      </p>
-                      <p>
-                        <input type="file" onChange={chatPhotoHandler}/>
-                      </p>
-                      {fileURL && <img className='sidebarChat__img' src={fileURL}/>}
-                      <button onClick={handleSubmit}>Add new Chat</button>
-                      <p>{progress} %</p>
+                <div className='addSidebarChat'>
+                        <div className='addSidebarChat__subContainer'>
+                              <div className="addSidebarChat__Input">
+                                <ForumIcon/>
+                                <input type="text" value={chatName} onChange={handleChange} placeholder='New chat name' required/>
+                              </div>
+                              <div className='addSidebarChat__Preview'>{fileURL ? <div className='sidebarChat__img'><img src={fileURL} /></div> :<div className='sidebarChat__img'></div> }</div>
+                              <div className='addSidebarChat__File'>
+                                  <button className='addSidebarChat__fileButton' onClick={() => fileRef.current.click()}>
+                                    Upload chat picture
+                                  </button>
+                                  <input type="file" ref={fileRef} onChange={chatPhotoHandler} multiple={false} hidden/>
+                              </div>
+                              <div className='addSidebarChat__Preview'>
+                                {error && <p className='addSidebarChat__error'>{error}</p>}
+                              </div>
+                              <div className='addSidebarChat__btn'>
+                                <button onClick={handleSubmit}>Add</button>
+                              </div>
+                        </div>
+                      <span className='addSidebarChat__progressBar' style={{width:`${progress}%`}}></span>
                 </div>
               </>
         }

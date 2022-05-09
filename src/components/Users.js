@@ -67,9 +67,8 @@ const Users = ({children}) => {
                                     <div className="app__body">
                                         <div className='sidebar'>
                                             <div className="sidebar__header">
-                                                <Avatar src={currentUser?.photoURL} alt=""/>
-                                                Hello {returnName(currentUser?.displayName)}!
-
+                                            <div className='sidebar__headerAvatar'><Avatar src={currentUser?.photoURL} alt=""/></div>
+                                                <p>Hello <span>{returnName(currentUser?.displayName)}</span> !</p>
                                                 <div className="sidebar__headerRight">
                                                     <IconButton onClick={()=>navigate('/')}>
                                                         <PeopleIcon/>
@@ -80,8 +79,8 @@ const Users = ({children}) => {
                                                     {/* <IconButton>
                                                         <EventNoteIcon/>
                                                     </IconButton> */}
-                                                    <IconButton ref={ref}>
-                                                        <MoreVertIcon onClick={() => setIsComponentVisible(val => !val)} />
+                                                    <IconButton ref={ref} onClick={() => setIsComponentVisible(val => !val)} >
+                                                        <MoreVertIcon />
                                                             {isComponentVisible &&  
                                                                 <div className='headerRight__more'>
                                                                     <ul>

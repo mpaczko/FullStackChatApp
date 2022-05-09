@@ -137,7 +137,7 @@ export const loginInitiate = (email, password) => {
         .then(({user}) => {
             dispatch(loginSuccess(user));
         })
-        .catch((error) => dispatch(loginFail(error.message)));
+        .catch((error) => {dispatch(loginFail(error.message));alert('Incorrect email or password.')});
     }
 }
 
